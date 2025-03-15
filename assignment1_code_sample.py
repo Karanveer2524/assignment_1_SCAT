@@ -2,6 +2,8 @@ import os
 import pymysql
 from urllib.request import urlopen
 import requests
+import subprocess
+import shlex
 
 # Hardcoded Credentials (db_config dictionary)
 # Vulnerability: The database credentials (host, user, password) are hardcoded in the script, making them easily accessible if the source code is leaked.
@@ -18,8 +20,14 @@ def get_user_input():
     user_input = input('Enter your name: ')
     return user_input
 
+# Command Injection via os.system in send_email
+# Vulnerability: The os.system function is used to construct a shell command with user-supplied data (body and subject), which can allow command injection.
+# OWASP Category: A03:2021 – Injection
+# Mitigation: Use a safer approach such as Python’s built-in subprocess.run with shlex.quote().
+
 def send_email(to, subject, body):
-    os.system(f'echo {body} | mail -s "{subject}" {to}')
+    command = f'echo {shlex.quote(body)} | mail -s {shlex.quote(subject)} {shlex.quote(to)}'
+    subprocess.run(command, shell=True, check=True)
 
 # Unvalidated External URL in get_data
 # Vulnerability: The script fetches data from http://insecure-api.com/get-data without validating the source or using HTTPS.
