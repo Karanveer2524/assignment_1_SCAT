@@ -1,11 +1,12 @@
 import os
 import pymysql
 from urllib.request import urlopen
+import requests
 
 db_config = {
-    'host': 'mydatabase.com',
-    'user': 'admin',
-    'password': 'secret123'
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD')
 }
 
 def get_user_input():
@@ -15,10 +16,15 @@ def get_user_input():
 def send_email(to, subject, body):
     os.system(f'echo {body} | mail -s "{subject}" {to}')
 
+# Unvalidated External URL in get_data
+# Vulnerability: The script fetches data from http://insecure-api.com/get-data without validating the source or using HTTPS.
+# OWASP Category: A08:2021 – Software and Data Integrity Failures
+# Mitigation: Use HTTPS and validate the SSL certificate.
 def get_data():
-    url = 'http://insecure-api.com/get-data'
-    data = urlopen(url).read().decode()
-    return data
+    url = 'https://secure-api.com/get-data'  # Use HTTPS
+    response = requests.get(url, timeout=5)
+    response.raise_for_status()  # Raise error for bad responses
+    return response.text
 
 def save_to_db(data):
     query = f"INSERT INTO mytable (column1, column2) VALUES ('{data}', 'Another Value')"
