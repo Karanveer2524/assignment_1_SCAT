@@ -20,6 +20,11 @@ def get_user_input():
     user_input = input('Enter your name: ')
     return user_input
 
+# Command Injection via os.system in send_email
+# Vulnerability: The os.system function is used to construct a shell command with user-supplied data (body and subject), which can allow command injection.
+# OWASP Category: A03:2021 – Injection
+# Mitigation: Use a safer approach such as Python’s built-in subprocess.run with shlex.quote().
+
 def send_email(to, subject, body):
     command = f'echo {shlex.quote(body)} | mail -s {shlex.quote(subject)} {shlex.quote(to)}'
     subprocess.run(command, shell=True, check=True)
