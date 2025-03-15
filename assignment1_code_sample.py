@@ -3,6 +3,11 @@ import pymysql
 from urllib.request import urlopen
 import requests
 
+# Hardcoded Credentials (db_config dictionary)
+# Vulnerability: The database credentials (host, user, password) are hardcoded in the script, making them easily accessible if the source code is leaked.
+# OWASP Category: A02:2021 – Cryptographic Failures
+# Mitigation: Store credentials in environment variables or a secure secrets management system.
+
 db_config = {
     'host': os.getenv('DB_HOST'),
     'user': os.getenv('DB_USER'),
