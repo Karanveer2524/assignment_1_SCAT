@@ -31,6 +31,11 @@ def get_data():
     response.raise_for_status()  # Raise error for bad responses
     return response.text
 
+# SQL Injection in save_to_db
+# Vulnerability: The SQL query is built using string concatenation, allowing SQL injection if data contains malicious SQL code.
+# OWASP Category: A03:2021 – Injection
+# Mitigation: Use parameterized queries.
+
 def save_to_db(data):
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
